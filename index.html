@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <style type="text/css">
+        *{ margin: 0; padding: 0; list-style: none; }
+        .mark{ width: 100%; height: 100%; background: rgba(0,0,0,0.6); position: absolute; left: 0; top: 0; }
+        .pop{ width: 400px; height: 260px; background: #fff; position: absolute; left: 50%; top: 50%; margin-left: -200px; margin-top: -130px; text-align: center; }
+        .pop>h3{ width: 100%; height: 40px;  line-height: 40px; }
+        .pop>p{ width: 100%; height: 180px; line-height: 180px; }
+        .pop>span{ width: 50%; height: 40px;  display: block; float: left; line-height: 40px; color: #000; font-size: 18px; font-weight: 800; cursor: pointer; }
+        .pop>span:last-child{  color: #000;}
+    </style>
+</head>
+<body>
+    <button id="btn">弹出</button>
+    <script>
+        function getDate(obj){
+            this.obj = obj;
+            this.btn = document.getElementById('btn');
+            this.creatDic();
+        }
+        getDate.prototype = {
+            constructor:getDate,
+            //创建节点
+            creatDic:function(){
+                var that = this;
+                this.btn.onclick = function(){
+                    that.mark = document.createElement('div');
+                    that.mark.className = 'mark'; 
+                    document.body.appendChild(that.mark);
+
+                    that.pop = document.createElement('div');
+                    that.pop.className = 'pop';
+                    that.pop.innerHTML = `<h3>${that.obj.title}</h3><p>${that.obj.content}</p><span>${that.obj.buttons[0]}</span><span>${that.obj.buttons[1]}</span>`;
+                    document.body.appendChild(that.pop);
+                    that.spn = document.getElementsByTagName('span');
+                    that.Clear(that.spn);
+                    that.move();
+                }
+            },
+           
+            //拖动
+            move:function(){
+                var that = this;
+                this.pop = document.getElementsByClassName('pop')[0];
+                this.pop.onmousedown = function(e){
+                    var e = e || window.event;
+                    //鼠标坐标
+                    var x = e.clientX;
+                    var y = e.clientY;
+                    document.onmousemove = function(e){
+                        var e = e || window.event;
+                        that.pop.style.left = Math.max(e.clientX,0) + "px";
+                        that.pop.style.top = Math.max(e.clientY,0) + "px";
+                    }
+                }
+                this.pop.onmouseup = function(){
+                    document.onmousemove = null;
+                }
+            },
+            //清除节点
+            Clear:function(spn){
+                var that = this;
+                this.divs = document.getElementsByTagName('div');
+                spn[0].onclick = function(){
+                    document.body.removeChild(that.divs[0]);
+                    document.body.removeChild(that.divs[0]);
+                }
+                spn[1].onclick = function(){
+                    document.body.removeChild(that.divs[0]);
+                    document.body.removeChild(that.divs[0]);
+                }
+            }
+
+        }
+        new getDate({
+            title:"购物车",
+            content:"您确定要删除不买了吗",
+            buttons:["删除","取消"],
+            successCallback:function(){}, // 点击确认按钮的回调函数
+            cancelCallback:function(){} // 点击取消按钮的回调函数
+        })
+    </script>
+</body>
+</html>
